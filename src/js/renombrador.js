@@ -33,6 +33,12 @@ function RenombradorExtensionCampusUCA() {
      // Se buscan los objetos que contienen los nombres de las asignaturas en el DOM y se almacenan
      this.asignaturasMenu = document.querySelectorAll("li.type_course > p.tree_item > a");
      this.asignaturasNavBar = document.querySelectorAll("div.breadcrumb > ul > li > a");
+	 
+	 // Se comprueba la versión de moodle (en el curso 2013-2014, la subcategoría "Mis cursos" se muestra como enlace, lo que cambia el comportamiento del script)
+	 if(this.asignaturasNavBar[1].innerHTML == "Mis cursos")
+		this.numNavBar = 3;
+	 else
+		this.numNavBar = 1;
 }
 
 // Comprueba si texto pertenece a la lista de palabras excluidas
@@ -142,9 +148,9 @@ RenombradorExtensionCampusUCA.prototype.muestraNombres = function() {
      // Barra
      // La asignatura se encuentra siempre en la posición 1 del array de asignaturas de la barra de navegación.
      if(this.mostrarGrado == true)
-          this.asignaturasNavBar[1].innerHTML = this.noMayus(this.asignaturasNavBar[1].title);
+          this.asignaturasNavBar[this.numNavBar].innerHTML = this.noMayus(this.asignaturasNavBar[this.numNavBar].title);
      else
-          this.asignaturasNavBar[1].innerHTML = this.noMayus(this.asignaturasNavBar[1].title.replace(this.patronNomGrado, ""));
+          this.asignaturasNavBar[this.numNavBar].innerHTML = this.noMayus(this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, ""));
      
      // Menú
      // Recorre cada asignatura de la lista y sustituye el código (almacenado en la propiedad innerHTML) por su nombre (que se obtiene de la propiedad title).
@@ -163,19 +169,19 @@ RenombradorExtensionCampusUCA.prototype.muestraSiglas = function() {
      // Barra
      // La asignatura se encuentra siempre en la posición 1 del array de asignaturas de la barra de navegación.
      // Se almacena el nombre del grado para posteriormente mostralo si está activada la opción correspondiente.
-     var nombreGrado = this.patronNomGrado.exec(this.asignaturasNavBar[1].title)[0];
-     var arrTexto = this.asignaturasNavBar[1].title.replace(this.patronNomGrado, "").split(" ");
+     var nombreGrado = this.patronNomGrado.exec(this.asignaturasNavBar[this.numNavBar].title)[0];
+     var arrTexto = this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, "").split(" ");
      
      // Si el nombre de la asignatura contiene más de una palabra, se obtienen sus siglas y se insertan sustituyendo el código.
      if(arrTexto.length > 1)
-          this.asignaturasNavBar[1].innerHTML = this.dameSiglas(arrTexto);
+          this.asignaturasNavBar[this.numNavBar].innerHTML = this.dameSiglas(arrTexto);
      // Si el nombre está compuesto de una sola palabra se obtienen las 3 primeras letras de la palabra y se insertan sustituyendo el código.
      else
-          this.asignaturasNavBar[1].innerHTML = arrTexto[0].substring(0, 3);
+          this.asignaturasNavBar[this.numNavBar].innerHTML = arrTexto[0].substring(0, 3);
      
      // Si está activada la opción de mostrar el nombre de la carrera se vuelve a añadir al final
      if(this.mostrarGrado == true)
-          this.asignaturasNavBar[1].innerHTML += this.dameSiglas(nombreGrado.substring(1, nombreGrado.length).split(" "));
+          this.asignaturasNavBar[this.numNavBar].innerHTML += this.dameSiglas(nombreGrado.substring(1, nombreGrado.length).split(" "));
      
      // Menú
      // Recorre la lista de asignaturas del menú.
