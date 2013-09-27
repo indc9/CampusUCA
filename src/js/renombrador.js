@@ -169,9 +169,20 @@ RenombradorExtensionCampusUCA.prototype.muestraSiglas = function() {
      // Barra
      // La asignatura se encuentra siempre en la posición 1 del array de asignaturas de la barra de navegación.
      // Se almacena el nombre del grado para posteriormente mostralo si está activada la opción correspondiente.
-     var nombreGrado = this.patronNomGrado.exec(this.asignaturasNavBar[this.numNavBar].title)[0];
-     var arrTexto = this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, "").split(" ");
-     
+	
+	 // Extraer el nombre del grado, solo en el caso del campus anterior al curso 2013-14
+	 var arrNombreGrado = this.patronNomGrado.exec(this.asignaturasNavBar[this.numNavBar].title);
+	 var arrTexto = null;
+	 var nombreGrado = null;
+	 
+	 // No encuentra el nombre del grado, caso campus curso 2013-14
+	 if(arrNombreGrado == null)
+		arrTexto = this.asignaturasNavBar[this.numNavBar].title.split(" ");
+	 else {
+		arrTexto = this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, "").split(" ");
+		nombreGrado = arrNombreGrado[0];
+	 }
+	 
      // Si el nombre de la asignatura contiene más de una palabra, se obtienen sus siglas y se insertan sustituyendo el código.
      if(arrTexto.length > 1)
           this.asignaturasNavBar[this.numNavBar].innerHTML = this.dameSiglas(arrTexto);
@@ -179,18 +190,18 @@ RenombradorExtensionCampusUCA.prototype.muestraSiglas = function() {
      else
           this.asignaturasNavBar[this.numNavBar].innerHTML = arrTexto[0].substring(0, 3);
      
-     // Si está activada la opción de mostrar el nombre de la carrera se vuelve a añadir al final
-     if(this.mostrarGrado == true)
+     // Si está activada la opción de mostrar el nombre de la carrera y no estamos en el curso 2013-14 se vuelve a añadir al final
+     if(this.numNavBar == 1 && this.mostrarGrado == true && arrNombreGrado != null)
           this.asignaturasNavBar[this.numNavBar].innerHTML += this.dameSiglas(nombreGrado.substring(1, nombreGrado.length).split(" "));
-     
+	 
      // Menú
      // Recorre la lista de asignaturas del menú.
      for(var i in this.asignaturasMenu) {
-          var nombreGrado = this.patronNomGrado.exec(this.asignaturasMenu[i].title);
+          nombreGrado = this.patronNomGrado.exec(this.asignaturasMenu[i].title);
           if(nombreGrado) {
                // Se almacena el nombre del grado para posteriormente mostralo si está activada la opción correspondiente.
-               var nombreGrado = nombreGrado[0];
-               var arrTexto = this.asignaturasMenu[i].title.replace(this.patronNomGrado, "").split(" ");
+               nombreGrado = nombreGrado[0];
+               arrTexto = this.asignaturasMenu[i].title.replace(this.patronNomGrado, "").split(" ");
                
                // Si el nombre de la asignatura contiene más de una palabra, se obtienen sus siglas y se insertan sustituyendo el código.
                if(arrTexto.length > 1)

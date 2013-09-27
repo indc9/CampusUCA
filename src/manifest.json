@@ -24,7 +24,7 @@
 {
      "name": "Campus UCA",
      "description": "Añade mejoras al campus virtual de la Universidad de Cádiz.",
-     "version": "0.5.4",
+     "version": "0.5.4.1",
      "manifest_version": 2,
      "icons": {
           "48" : "images/icon48.png",
