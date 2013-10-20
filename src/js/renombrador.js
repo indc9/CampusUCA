@@ -239,13 +239,15 @@ function CU_Renombrador() {
 			  }
 		 }
 	};
-};
+}; // CU_Renombrador
 
 function CU_Renombrar() {
 	// Instanciación de clases
-	var renombrador = new CU_Renombrador();
+	renombrador = new CU_Renombrador();
 
 	// Se realiza una petición a la background page de la extensión para obtener la configuración almacenada
+	// Mejorar: guardar la config. y añadir método a CU_Renombrador para no tener que volver a crear otro objeto al desplegar
+	// el menú y así ahorrar una petición a la background page.
 	chrome.extension.sendMessage(
 		 { msg: "dameOpciones" },
 		 function(respuesta) {
@@ -265,7 +267,8 @@ function CU_Renombrar() {
 // Comprueba si se ha desplegado el menú "Mis cursos". En caso negativo, se realiza una nueva llamada tras una pequeña espera.
 function CU_RenombrarDesplegable() {
 	if(!menuRenombrado) {
-		if(document.querySelector('p#expandable_branch_6').parentNode.children.length == 2) {
+		if(menuDesplegable.parentNode.children.length == 2) {
+			// Cuando aparece el contenido del menú desplegable se crea otro objeto CU_Renombrador
 			CU_Renombrar();
 			menuRenombrado = true;
 		} else
@@ -273,9 +276,18 @@ function CU_RenombrarDesplegable() {
 	}
 };
 
-// Añade un evento que se dispara cuando se despliega el menú "Mis cursos", que carga dinámicamente las asignaturas.
-document.querySelector('p#expandable_branch_6').addEventListener('click', CU_RenombrarDesplegable);
-var menuRenombrado = false;
-
 // Lanza el script
+var renombrador = null;
 CU_Renombrar();
+
+// En el caso del campus del curso 2013-2014, se busca el menú desplegable "Mis cursos" y se añade un evento
+// que debe dispararse cuando se despliegue.
+if(renombrador.curso1314) {
+	var menuRenombrado = false;
+	var nodosMC = document.querySelectorAll('a[href="https://av03-13-14.uca.es/moodle/my/"]');
+	var menuDesplegable = nodosMC[2].parentNode;
+
+	// Añade un evento que se dispara cuando se despliega el menú "Mis cursos", que carga dinámicamente las asignaturas.
+	if(menuDesplegable)
+		menuDesplegable.addEventListener('click', CU_RenombrarDesplegable);
+}
