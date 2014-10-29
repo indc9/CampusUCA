@@ -35,25 +35,8 @@ function CU_Renombrador() {
 	
 	// Se buscan los objetos que contienen los nombres de las asignaturas en el DOM y se almacenan
 	this.asignaturasNavBar = document.querySelectorAll("div.breadcrumb > ul > li > a");
-	
-	// Se comprueba la versión de moodle
-	if(this.asignaturasNavBar[1].innerHTML == "Mis cursos") {
-		this.curso1314 = true;
-		this.numNavBar = 3;
-	} else {
-		this.curso1314 = false;
-		this.numNavBar = 1;
-	}
-	
-    // Según la versión del campus, se buscará en una u otra parte del menú
-	if(this.curso1314) {
-		//document.querySelector("p#expandable_branch_6").click();
-	}
 		
-	this.asignaturasMenu = document.querySelectorAll("li.contains_branch > p.tree_item > a"); // otro: li.contains_branch > p.tree_item > a
-	//alert(this.asignaturasMenu.length);
-	
-	
+	this.asignaturasMenu = document.querySelectorAll("li.contains_branch > p.tree_item > a");
 	
 	/*****************
 	 * Métodos
@@ -163,11 +146,8 @@ function CU_Renombrador() {
 	// Método que se encarga de sustituir el código de cada asignatura en el menú por su nombre.
 	this.muestraNombres = function() {
 		 // Barra
-		 // La asignatura se encuentra siempre en la posición 1 del array de asignaturas de la barra de navegación.
-		 if(this.mostrarGrado == true)
-			  this.asignaturasNavBar[this.numNavBar].innerHTML = this.noMayus(this.asignaturasNavBar[this.numNavBar].title);
-		 else
-			  this.asignaturasNavBar[this.numNavBar].innerHTML = this.noMayus(this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, ""));
+		 // La asignatura se encuentra siempre en la posición 3 del array de asignaturas de la barra de navegación.
+		 this.asignaturasNavBar[3].innerHTML = this.noMayus(this.asignaturasNavBar[3].title);
 		 
 		 // Menú
 		 // Recorre cada asignatura de la lista y sustituye el código (almacenado en la propiedad innerHTML) por su nombre (que se obtiene de la propiedad title).
@@ -187,43 +167,26 @@ function CU_Renombrador() {
 		// La asignatura se encuentra siempre en la posición 1 del array de asignaturas de la barra de navegación.
 		// Se almacena el nombre del grado para posteriormente mostralo si está activada la opción correspondiente.
 		
-		// Extraer el nombre del grado, solo en el caso del campus anterior al curso 2013-14
-		var arrNombreGrado = this.patronNomGrado.exec(this.asignaturasNavBar[this.numNavBar].title);
-		var arrTexto = null;
-		var nombreGrado = null;
-		
-		// No encuentra el nombre del grado, caso campus curso 2013-14
-		if(arrNombreGrado == null)
-			arrTexto = this.asignaturasNavBar[this.numNavBar].title.split(" ");
-		else {
-			arrTexto = this.asignaturasNavBar[this.numNavBar].title.replace(this.patronNomGrado, "").split(" ");
-			nombreGrado = arrNombreGrado[0];
-		}
+		// Extraer el nombre del grado
+		// Se separa en palabras
+		arrTexto = this.asignaturasNavBar[3].title.split(" ");
 		
 		// Si el nombre de la asignatura contiene más de una palabra, se obtienen sus siglas y se insertan sustituyendo el código.
 		if(arrTexto.length > 1)
-			this.asignaturasNavBar[this.numNavBar].innerHTML = this.dameSiglas(arrTexto);
+			this.asignaturasNavBar[3].innerHTML = this.dameSiglas(arrTexto);
 		// Si el nombre está compuesto de una sola palabra se obtienen las 3 primeras letras de la palabra y se insertan sustituyendo el código.
 		else
-			this.asignaturasNavBar[this.numNavBar].innerHTML = arrTexto[0].substring(0, 3);
-		 
-		// Si está activada la opción de mostrar el nombre de la carrera y no estamos en el curso 2013-14 se vuelve a añadir al final
-		if(this.numNavBar == 1 && this.mostrarGrado == true && arrNombreGrado != null)
-			this.asignaturasNavBar[this.numNavBar].innerHTML += this.dameSiglas(nombreGrado.substring(1, nombreGrado.length).split(" "));
+			this.asignaturasNavBar[3].innerHTML = arrTexto[0].substring(0, 3);
 		 
 		// Menú
 		// Recorre la lista de asignaturas del menú.
 		for(var i in this.asignaturasMenu) {
-			// En el curso 13-14 no aparece el nombre del grado en el menú "Mis cursos", luego hay que darle algún valor.
+			// A partir del curso 13-14 no aparece el nombre del grado en el menú "Mis cursos", luego hay que darle algún valor.
 			// Dicho valor además deberá ser nulo cuando no se trate de alguna asignatura.
-			if(this.curso1314)
-				nombreGrado = this.asignaturasMenu[i].title;
-			else
-				nombreGrado = this.patronNomGrado.exec(this.asignaturasMenu[i].title);
-				
-			if(nombreGrado) {
+			nombreAsignatura = this.asignaturasMenu[i].title;
+			
+			if(nombreAsignatura) {
 				// Se almacena el nombre del grado para posteriormente mostralo si está activada la opción correspondiente.
-				nombreGrado = nombreGrado[0];
 				arrTexto = this.asignaturasMenu[i].title.replace(this.patronNomGrado, "").split(" ");
 			   
 			    // Si el nombre de la asignatura contiene más de una palabra, se obtienen sus siglas y se insertan sustituyendo el código.
@@ -232,10 +195,17 @@ function CU_Renombrador() {
 			    // Si el nombre está compuesto de una sola palabra se obtienen las 3 primeras letras de la palabra y se insertan sustituyendo el código.
 			    else
 					this.asignaturasMenu[i].innerHTML = arrTexto[0].substring(0, 3);
-			   
-			    // Si está activada la opción de mostrar el nombre de la carrera se vuelve a añadir al final
-			    if(this.mostrarGrado == true && !this.curso1314)
-					this.asignaturasMenu[i].innerHTML += this.dameSiglas(nombreGrado.substring(1, nombreGrado.length).split(" "));
+
+				if (this.mostrarGrado) {
+					nombreGrado = this.patronNomGrado.exec(this.asignaturasMenu[i].title);
+					
+					if (nombreGrado) {
+						nombreGrado = String(nombreGrado);
+						arrNombreGrado = nombreGrado.substring(3, nombreGrado.length).split(" ");
+						this.asignaturasMenu[i].innerHTML += " - " + this.dameSiglas(arrNombreGrado);
+					}
+				}
+
 			  }
 		 }
 	};
@@ -266,7 +236,11 @@ function CU_Renombrar() {
 
 // Comprueba si se ha desplegado el menú "Mis cursos". En caso negativo, se realiza una nueva llamada tras una pequeña espera.
 function CU_RenombrarDesplegable() {
-	if(!menuRenombrado) {
+	// acumulador para dejar de realizar llamadas a esta función en caso de que por algún motivo el menú no llegara
+	// a renombrarse
+	intentos++;
+
+	if(!menuRenombrado && intentos < 50) {
 		if(menuDesplegable.parentNode.children.length == 2) {
 			// Cuando aparece el contenido del menú desplegable se crea otro objeto CU_Renombrador
 			CU_Renombrar();
@@ -280,14 +254,13 @@ function CU_RenombrarDesplegable() {
 var renombrador = null;
 CU_Renombrar();
 
-// En el caso del campus del curso 2013-2014, se busca el menú desplegable "Mis cursos" y se añade un evento
+// Se busca el menú desplegable "Mis cursos" y se añade un evento
 // que debe dispararse cuando se despliegue.
-if(renombrador.curso1314) {
-	var menuRenombrado = false;
-	var nodosMC = document.querySelectorAll('a[href="https://av03-13-14.uca.es/moodle/my/"]');
-	var menuDesplegable = nodosMC[2].parentNode;
+var menuRenombrado = false;
+var nodosMC = document.querySelectorAll('a[href="https://av03-14-15.uca.es/moodle/my/"]');
+var menuDesplegable = nodosMC[2].parentNode;
+var intentos = 0;
 
-	// Añade un evento que se dispara cuando se despliega el menú "Mis cursos", que carga dinámicamente las asignaturas.
-	if(menuDesplegable)
-		menuDesplegable.addEventListener('click', CU_RenombrarDesplegable);
-}
+// Añade un evento que se dispara cuando se despliega el menú "Mis cursos", que carga dinámicamente las asignaturas.
+if(menuDesplegable)
+	menuDesplegable.addEventListener('click', CU_RenombrarDesplegable);
