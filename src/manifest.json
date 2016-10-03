@@ -1,4 +1,4 @@
-﻿/*
+﻿<!--
  * Escrito por Alberto García González.
  * Contacto: alberto.garciagonza@alum.uca.es
  * 
@@ -18,13 +18,13 @@
  * 
  * Debería haber recibido una copia de la GNU General Public License
  * junto con Campus UCA. Si no es así, consulte <http://www.gnu.org/licenses/>.
- * 
- */
+ *
+-->
 
 {
      "name": "Campus UCA",
      "description": "Añade mejoras al campus virtual de la Universidad de Cádiz.",
-     "version": "0.7",
+     "version": "0.7.2",
      "manifest_version": 2,
      "icons": {
           "48" : "images/icon48.png",
